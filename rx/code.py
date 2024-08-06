@@ -51,7 +51,7 @@ def consume(queue):
         if len(queue) > 0:
             r = queue.popleft()
             await pulse_relay(r, FLAME_ON_DURATION)
-        await asyncio.sleep_ms(1)
+        await asyncio.sleep_ms(0)
 
 
 async def reciever(radio, queue):
@@ -61,7 +61,7 @@ async def reciever(radio, queue):
             print(f"Recieved bytes: {packet}")
             # add to queue
             queue.append(int(packet))
-        await asyncio.sleep_ms(1)
+        await asyncio.sleep_ms(0)
 
 
 async def main():

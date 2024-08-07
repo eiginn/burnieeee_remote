@@ -5,6 +5,7 @@ import neopixel
 import adafruit_rfm69
 from collections import deque
 
+# Time to hold gas solenoids open
 FLAME_ON_DURATION = 0.5
 
 ## Radio parts
@@ -18,10 +19,10 @@ RESET = digitalio.DigitalInOut(board.RFM_RST)
 rfm69 = adafruit_rfm69.RFM69(board.SPI(), CS, RESET, RADIO_FREQ_MHZ, encryption_key=ENCKEY)
 
 relays = [
-    digitalio.DigitalInOut(board.D13),
-    digitalio.DigitalInOut(board.D12),
-    digitalio.DigitalInOut(board.D11),
-    digitalio.DigitalInOut(board.D10)
+    digitalio.DigitalInOut(board.D6),   # UP
+    digitalio.DigitalInOut(board.D9),   # LEFT
+    digitalio.DigitalInOut(board.D10),  # DOWN
+    digitalio.DigitalInOut(board.D11)   # RIGHT
 ]
 
 for r in relays:
@@ -34,7 +35,7 @@ KEYMAP = {
     3: "RIGHT"
 }
 
-relay_queue = deque([], 3)
+relay_queue = deque([], 4)
 
 
 async def pulse_relay(relay, interval):
@@ -44,6 +45,8 @@ async def pulse_relay(relay, interval):
         await asyncio.sleep(interval)
         relays[relay].value = False
         print(f"relay {relay} pulse ended")
+    else:
+        print(f"relay {relay} already high")
 
 
 def consume(queue):
@@ -59,8 +62,9 @@ async def reciever(radio, queue):
         packet = rfm69.receive(timeout=0.05)
         if packet is not None:
             print(f"Recieved bytes: {packet}")
+            r = int(packet)
             # add to queue
-            queue.append(int(packet))
+            queue.append(r)
         await asyncio.sleep_ms(0)
 
 

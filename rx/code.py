@@ -37,9 +37,14 @@ KEYMAP = {
 }
 
 relay_queue = deque([], 4)
+pulse_all_running = False
 
 
 async def pulse_relay(relay, interval):
+    global pulse_all_running  # ugh
+    if pulse_all_running:
+        print("ALREADY RUNNING PULSE ALL")
+        return
     if relays[relay].value == False:
         print(f"relay {relay} pulse started")
         relays[relay].value = True
@@ -53,6 +58,11 @@ async def pulse_all(interval):
     '''
     When you give up on making pulse_relay clever... :(
     '''
+    global pulse_all_running  # ugh
+    if pulse_all_running:
+        print("ALREADY RUNNING PULSE ALL")
+        return
+    pulse_all_running = True
     print("PULSE ALL")
     for r in range(4):
         relays[r].value = True
@@ -60,6 +70,7 @@ async def pulse_all(interval):
     for r in range(4):
         relays[r].value = False
     print("PULSE ALL OFF")
+    pulse_all_running = False
 
 
 def consume(queue):

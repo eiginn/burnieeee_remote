@@ -32,7 +32,8 @@ KEYMAP = {
     0: "UP",
     1: "LEFT",
     2: "DOWN",
-    3: "RIGHT"
+    3: "RIGHT",
+    4: "BIGBUTTON"
 }
 
 relay_queue = deque([], 4)
@@ -48,12 +49,29 @@ async def pulse_relay(relay, interval):
     else:
         print(f"relay {relay} already high")
 
+async def pulse_all(interval):
+    '''
+    When you give up on making pulse_relay clever... :(
+    '''
+    print("PULSE ALL")
+    for r in range(4):
+        relays[r].value = True
+    await asyncio.sleep(interval)
+    for r in range(4):
+        relays[r].value = False
+    print("PULSE ALL OFF")
+
 
 def consume(queue):
     while True:
         if len(queue) > 0:
             r = queue.popleft()
-            await pulse_relay(r, FLAME_ON_DURATION)
+            if r < 4:
+                await pulse_relay(r, FLAME_ON_DURATION)
+            elif r == 4:
+                await pulse_all(FLAME_ON_DURATION)
+            else:
+                print("relay out of range")
         await asyncio.sleep_ms(0)
 
 

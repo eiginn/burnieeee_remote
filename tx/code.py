@@ -3,54 +3,10 @@ import digitalio
 import keypad
 import neopixel
 import adafruit_rfm69
-import displayio
-
-## Dis stuff
-from i2cdisplaybus import I2CDisplayBus
-import terminalio
-from adafruit_display_text import bitmap_label as label
-from adafruit_displayio_sh1107 import SH1107, DISPLAY_OFFSET_ADAFRUIT_128x128_OLED_5297
+from remote_display import *
 
 
 FLAME_ON_DURATION = 0.5
-
-displayio.release_displays()
-
-i2c = board.STEMMA_I2C()
-
-display_bus = I2CDisplayBus(i2c, device_address=0x3D)
-
-# Width, height and rotation for Monochrome 1.12" 128x128 OLED
-WIDTH = 128
-HEIGHT = 128
-ROTATION = 90
-
-# Border width
-BORDER = 2
-
-display = SH1107(
-    display_bus,
-    width=WIDTH,
-    height=HEIGHT,
-    display_offset=DISPLAY_OFFSET_ADAFRUIT_128x128_OLED_5297,
-    rotation=ROTATION,
-)
-
-# Make the display context
-splash = displayio.Group()
-display.root_group = splash
-
-color_bitmap = displayio.Bitmap(WIDTH, HEIGHT, 1)
-color_palette = displayio.Palette(1)
-color_palette[0] = 0x000000  # Black
-
-bg_sprite = displayio.TileGrid(color_bitmap, pixel_shader=color_palette, x=0, y=0)
-splash.append(bg_sprite)
-
-# Draw some label text
-name_text = "Burnieeeee\nFLAMES"
-name_text_area = label.Label(terminalio.FONT, scale=2, text=name_text, color=0xFFFFFF, x=4, y=8)
-splash.append(name_text_area)
 
 
 ## Radio parts
@@ -64,12 +20,13 @@ RESET = digitalio.DigitalInOut(board.RFM_RST)
 rfm69 = adafruit_rfm69.RFM69(board.SPI(), CS, RESET, RADIO_FREQ_MHZ, encryption_key=ENCKEY)
 
 ## Keypad setup
-keys = keypad.Keys((board.D13, board.D12, board.D11, board.D10), value_when_pressed=False, pull=True)
+keys = keypad.Keys((board.D13, board.D12, board.D11, board.D10, board.D5), value_when_pressed=False, pull=True)
 KEYMAP = {
     0: "UP",
     1: "LEFT",
     2: "DOWN",
-    3: "RIGHT"
+    3: "RIGHT",
+    4: "BIBBUTTON"
 }
 
 # Create an event to reuse, avoid frequent allocation

@@ -1,13 +1,14 @@
 import board
+import time
 import digitalio
 import keypad
 import neopixel
 import adafruit_rfm69
 from remote_display import *
+from bucket import Bucket
 
 
 FLAME_ON_DURATION = 0.5
-
 
 ## Radio parts
 ENCKEY = bytearray("asdfghjklasdfghj", 'utf-8')
@@ -26,12 +27,13 @@ KEYMAP = {
     1: "LEFT",
     2: "DOWN",
     3: "RIGHT",
-    4: "BIBBUTTON"
+    4: "BIGBUTTON"
 }
 
 # Create an event to reuse, avoid frequent allocation
 event = keypad.Event()
 
+bucket = Bucket(8, 0.5)
 while True:
     # Check if we lost some events.
     if keys.events.overflowed:
@@ -40,6 +42,13 @@ while True:
 
     if keys.events.get_into(event):
         if event.pressed:
-            print(KEYMAP[event.key_number])
-            # send string since int 0 in bytes breaks
-            rfm69.send(bytes(f"{event.key_number}", "utf-8"))
+            fill_amount = 1
+            if KEYMAP[event.key_number] == "BIGBUTTON":
+                fill_amount = 4
+            if bucket.tryfill(fill_amount):
+                print(f"{KEYMAP[event.key_number]}")
+                # send string since int 0 in bytes breaks
+                rfm69.send(bytes(f"{event.key_number}", "utf-8"))
+            else:
+                print("RATELIMIT")
+    bucket.leak()

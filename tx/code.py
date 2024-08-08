@@ -10,6 +10,9 @@ from bucket import Bucket
 
 FLAME_ON_DURATION = 0.5
 
+# unused due to needing 12V
+BUTTONLED = board.D6
+
 ## Radio parts
 ENCKEY = bytearray("asdfghjklasdfghj", 'utf-8')
 RADIO_FREQ_MHZ = 915.0
@@ -33,7 +36,7 @@ KEYMAP = {
 # Create an event to reuse, avoid frequent allocation
 event = keypad.Event()
 
-bucket = Bucket(8, 0.5)
+bucket = Bucket(8, 0.25, upd_func=update_bar)
 while True:
     # Check if we lost some events.
     if keys.events.overflowed:

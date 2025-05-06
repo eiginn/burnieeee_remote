@@ -20,7 +20,7 @@ try:
     # Width, height and rotation for Monochrome 1.12" 128x128 OLED
     WIDTH = 128
     HEIGHT = 128
-    ROTATION = 0
+    ROTATION = 90
 
     # Border width
     BORDER = 2

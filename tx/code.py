@@ -8,7 +8,7 @@ from remote_display import *
 from bucket import Bucket
 
 
-FLAME_ON_DURATION = 0.5
+FLAME_ON_DURATION = 0.33
 
 # unused due to needing 12V
 BUTTONLED = board.D6
@@ -21,7 +21,7 @@ CS = digitalio.DigitalInOut(board.RFM_CS)
 RESET = digitalio.DigitalInOut(board.RFM_RST)
 
 # Initialise RFM69 radio
-rfm69 = adafruit_rfm69.RFM69(board.SPI(), CS, RESET, RADIO_FREQ_MHZ, encryption_key=ENCKEY)
+rfm69 = adafruit_rfm69.RFM69(board.SPI(), CS, RESET, RADIO_FREQ_MHZ, encryption_key=ENCKEY, high_power=True)
 
 ## Keypad setup
 keys = keypad.Keys((board.D13, board.D12, board.D11, board.D10, board.D5), value_when_pressed=False, pull=True)

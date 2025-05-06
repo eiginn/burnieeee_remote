@@ -66,8 +66,9 @@ try:
     display.refresh()
 
     USE_DISPLAY = True
-except RuntimeError:
+except RuntimeError as e:
     # right now we don't use display
+    print(f"Error: {e}")
     pass
 
 
